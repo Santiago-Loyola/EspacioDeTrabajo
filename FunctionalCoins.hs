@@ -47,3 +47,5 @@ describe "Prueba sin definir nuevas funciones: " $ do
 it "8 - ¿Cuál es la billetera de Pepe? Debería ser 10 monedas." $ billetera pepe `shouldBe` 10
 it "9 - ¿Cuál es la billetera de Pepe, luego de un cierre de su cuenta? Debería ser 0." $ (cierreDeCuenta . billetera) pepe `shouldBe` 0
 it "10 - ¿Cómo quedaría la billetera de Pepe si le depositan 15 monedas, extrae 2, y tiene un Upgrade? Debería quedar en 27.6." $ (upGrade . extraccion 2 . depositar 15 . billetera) pepe `shouldBe` 27.6
+
+probando
