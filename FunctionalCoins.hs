@@ -5,10 +5,10 @@ import Data.Maybe -- Por si llegan a usar un método de colección que devuelva 
 import Test.Hspec -- Para poder usar los tests que se piden más abajo (ponerlo luego de instalar hspec!!)
 
 
-data Usuario = Usuario {billetera::Billetera} deriving (Show,Eq)
+data Usuario = Usuario {nombre::String, billetera::Billetera} deriving (Show,Eq)
 
-pepe = Usuario 10
-lucho = Usuario 2
+pepe = Usuario "pepe" 10
+lucho = Usuario "lucho" 2
 
 --Eventos
 type Billetera = Float
@@ -42,18 +42,21 @@ it "7 - Depositar 1000, y luego tener un upgrade: 1020." $ upGrade (depositar 10
 
 
 --Usuarios
-
+{-
 ejecutarTestUsuarios = hspec $ do
 describe "Prueba sin definir nuevas funciones." $ do
 it "8 - ¿Cuál es la billetera de Pepe? Debería ser 10 monedas." $ billetera pepe `shouldBe` 10
 it "9 - ¿Cuál es la billetera de Pepe, luego de un cierre de su cuenta? Debería ser 0." $ (cierreDeCuenta . billetera) pepe `shouldBe` 0
 it "10 - ¿Cómo quedaría la billetera de Pepe si le depositan 15 monedas, extrae 2, y tiene un Upgrade? Debería quedar en 27.6." $ (upGrade . extraccion 2 . depositar 15 . billetera) pepe `shouldBe` 27.6
-
-
+-}
 
 --Transacciones
+compararUsuario :: Usuario -> Usuario -> Bool
+compararUsuario usuario otroUsuario = nombre usuario == nombre otroUsuario
+{-
 type Transacciones = Usuario -> Evento
 transaccion1 :: Transacciones
 transaccion2 :: Transacciones
-transaccion1 p = (cierreDeCuenta . billetera) p
-transaccion2 p = (depositar 5 . billetera) p
+transaccion1 usuario = usuario cierreDeCuenta
+transaccion2 usuario = usuario depositar 5
+-}
