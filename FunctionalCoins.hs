@@ -56,15 +56,21 @@ crearTransacción :: Usuario -> Evento -> Transaccion
 crearTransacción usuario evento otroUsuario | compararUsuario usuario otroUsuario = evento
                                             | otherwise = quedaIgual
 
+pagoEntreUsuarios :: Usuario -> Billetera -> Usuario -> Transaccion
+pagoEntreUsuarios extraccionAlUsuario moneda depositarAlUsuario usuarioAComparar | compararUsuario extraccionAlUsuario usuarioAComparar = extraccion moneda
+                                                                                 | compararUsuario depositarAlUsuario usuarioAComparar = depositar moneda
+                                                                                 | otherwise = quedaIgual
+
+
 type Transaccion = Usuario -> Evento
-transaccion1, transaccion2, transaccion3, transaccion4 :: Transaccion
+transaccion1, transaccion2, transaccion3, transaccion4,transaccion5 :: Tr ansaccion
 
 
 transaccion1 = crearTransacción lucho cierreDeCuenta  --usuario y monto pattern matching
 transaccion2 = crearTransacción pepe (depositar 5)
 transaccion3 = crearTransacción lucho tocoYMeVoy
 transaccion4 = crearTransacción lucho ahorranteErrante
-
+transaccion5 = pagoEntreUsuarios pepe 7 lucho
 
 ejecutarTestTransacción = hspec $ do
   describe "Consultar lo siguiente sin definir nuevas funciones." $ do
@@ -79,4 +85,3 @@ tocoYMeVoy :: Evento
 tocoYMeVoy = cierreDeCuenta.upGrade .depositar 15
 ahorranteErrante :: Evento
 ahorranteErrante = depositar 10.upGrade.depositar 8.extraccion 1.depositar 2.depositar 1
-
