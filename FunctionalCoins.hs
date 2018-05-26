@@ -63,7 +63,7 @@ pagoEntreUsuarios extraccionAlUsuario moneda depositarAlUsuario usuarioAComparar
 
 
 type Transaccion = Usuario -> Evento
-transaccion1, transaccion2, transaccion3, transaccion4,transaccion5 :: Tr ansaccion
+transaccion1, transaccion2, transaccion3, transaccion4,transaccion5 :: Transaccion
 
 
 transaccion1 = crearTransacción lucho cierreDeCuenta  --usuario y monto pattern matching
