@@ -9,6 +9,7 @@ data Usuario = Usuario {nombre::String, billetera::Billetera} deriving (Show,Eq)
 
 pepe = Usuario "José" 10
 lucho = Usuario "Luciano" 2
+pepe2 = Usuario "José" 20
 
 --Eventos
 type Billetera = Float
@@ -51,13 +52,31 @@ ejecutarTestUsuarios = hspec $ do
 compararUsuario :: Usuario -> Usuario -> Bool
 compararUsuario usuario otroUsuario = nombre usuario == nombre otroUsuario
 
-crearTransacción :: Usuario -> Evento -> Transacciones
+crearTransacción :: Usuario -> Evento -> Transaccion
 crearTransacción usuario evento otroUsuario | compararUsuario usuario otroUsuario = evento
                                             | otherwise = quedaIgual
 
-type Transacciones = Usuario -> Evento
-transaccion1 :: Transacciones
-transaccion2 :: Transacciones
+type Transaccion = Usuario -> Evento
+transaccion1, transaccion2, transaccion3, transaccion4 :: Transaccion
 
-transaccion1 p  = crearTransacción lucho cierreDeCuenta p
-transaccion2 p = crearTransacción pepe (depositar 5) p
+
+transaccion1 = crearTransacción lucho cierreDeCuenta  --usuario y monto pattern matching
+transaccion2 = crearTransacción pepe (depositar 5)
+transaccion3 = crearTransacción lucho tocoYMeVoy
+transaccion4 = crearTransacción lucho ahorranteErrante
+
+
+ejecutarTestTransacción = hspec $ do
+  describe "Consultar lo siguiente sin definir nuevas funciones." $ do
+    it "11 ..." $ transaccion1 pepe 20 `shouldBe` 20
+    it "12 ..." $ transaccion2 pepe 10 `shouldBe` 15
+    it "13 ..." $ transaccion2 pepe 50 `shouldBe` 55
+    it "14 ..." $ transaccion3 lucho 10 `shouldBe` 0
+    it "15 ..." $ transaccion4 lucho 10 `shouldBe` 34
+
+--Nuevos Eventos
+tocoYMeVoy :: Evento
+tocoYMeVoy = cierreDeCuenta.upGrade .depositar 15
+ahorranteErrante :: Evento
+ahorranteErrante = depositar 10.upGrade.depositar 8.extraccion 1.depositar 2.depositar 1
+
