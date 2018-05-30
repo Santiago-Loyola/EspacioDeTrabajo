@@ -56,6 +56,8 @@ fraudeOlímpico comprador = (nuevoSentimiento "ira asesina" . estafa) comprador
 seguidilla :: Numero -> Estrategia
 seguidilla 0 persona = persona
 seguidilla numero persona = (seguidilla (numero-1) . nuevoSentimiento "molestia") persona
+crearListaDeMolestia numero = (take (numero) . repeat ) "molestia"
+seguidilla2 numero persona = foldl (flip nuevoSentimiento) persona (crearListaDeMolestia numero)
 
 --2a
 sentimientosMalos = ["molestia", "bronca", "ira asesina"]
@@ -88,12 +90,14 @@ raccionar comprador vendedor | (quiereMatarATodos . vender comprador ) vendedor 
                              | otherwise = defensaAlConsumidor
 
 --4
-comparar lista = "placer" == (!!) lista 0
-comparar2 sentimiento lista = sentimiento == (!!) lista 0
-sienteDepresiónLuegoDeVenta comprador vendedor = (comparar2 "depresion" . sentimientos . raccionar comprador vendedor) vendedor
-sienteTristezaLuegoDeVenta comprador vendedor = (comparar2 "tristeza" . sentimientos . raccionar comprador vendedor) vendedor
-sientePlacerLuegoDeVenta comprador vendedor = (comparar . sentimientos . raccionar comprador vendedor) vendedor
+sienteLuegoDeVenta unSentimiento comprador vendedor = ((== unSentimiento) . head . sentimientos . raccionar comprador vendedor) vendedor
+
+sienteDepresiónLuegoDeVenta  = sienteLuegoDeVenta "depresion"
+sienteTristezaLuegoDeVenta  = sienteLuegoDeVenta "tristeza"
+sientePlacerLuegoDeVenta  = sienteLuegoDeVenta "placer"
 
 ventaElite :: Persona -> [Persona] -> [Persona]
-condicion2 comprador vendedor =  sientePlacerLuegoDeVenta comprador vendedor
-ventaElite comprador vendedor = filter (condicion2 comprador) vendedor
+raccionDelVendedor comprador vendedor = raccionar comprador vendedor vendedor
+condicion2 comprador vendedores =  sientePlacerLuegoDeVenta comprador vendedores
+ventaElite comprador vendedores = (map (raccionDelVendedor comprador) . filter (condicion2 comprador)) vendedores
+
