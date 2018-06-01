@@ -3,12 +3,12 @@ import Text.Show.Functions
 
 type Nombre = String
 type Horas = Float
-type MateriaAprobada = Alumno -> Alumno
+type MateriaAprobada = Materia
 type EfectoAlumno = Alumno -> Alumno
 type Conceptos = String
 type CantReentrega = Float
 
-data Alumno = Alumno {nombre::Nombre,dedicacion::Horas,materiasAprobadas::[MateriaAprobada],conceptos::[Conceptos]}deriving Show
+data Alumno = Alumno {nombre::Nombre,dedicacion::Horas,materiasAprobadas::[Materia],conceptos::[Conceptos]}deriving Show
 data Materia = Materia {asignatura::Nombre, efecto::EfectoAlumno } deriving Show
 
 santi = Alumno "Santiago" 0 [] []
