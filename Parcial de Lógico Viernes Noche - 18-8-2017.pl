@@ -64,3 +64,20 @@ participa(Cantante,Fama):-,puedeParticipar(Cantante,Concierto),fama(Concierto,Fa
 
 fama(Concierto,Fama):-concierto(Concierto,_,Fama,_).
 
+%4----------------------------------------------------------------------------------------------------------------
+/*Queremos verificar si un vocaloid es el único que participa de un concierto,
+esto se cumple si ninguno de sus conocidos ya sea directo o indirectos (en cualquiera de los niveles)
+participa en el mismo concierto.*/
+
+conoce(megurineLuka,hatsuneMiku).
+conoce(megurineLuka,gumi).
+conoce(gumi,seeU).
+conoce(seeU,kaito).
+
+unicoParticipante(Cantante,Concierto):-not(sonConocidos(Cantante,OtroCantante)),puedeParticipar(OtroCantante,Concierto),	puedeParticipar(Cantante,Concierto).
+
+
+seConocen(A,B):-conoce(A,B).
+sonConocidos(A,B):-seConocen(A,C),sonConocidos(C,B).
+
+
