@@ -1,23 +1,66 @@
-%MAL PLANTEADO LA BASE DE CONOCIMIENTOS
-cantante(megurineluka,nightFever,4).
-cantante(megurineluka,foreverYoung,5).
-cantante(hatsuneMiku,tellYourWorld,4).
-cantante(gumi,foreverYoung,4).
-cantante(gumi,tellYourWorld,5).
-cantante(seeU,novemberRain,6).
-cantante(seeU,nightFever,5).
+%cantante(Cantante,Tema,Tiempo).
+cantante(megurineluka,cancion(nightFever,4)).
+cantante(megurineluka,cancion(foreverYoung,5)).
+cantante(hatsuneMiku,cancion(tellYourWorld,4)).
+cantante(gumi,cancion(foreverYoung,4)).
+cantante(gumi,cancion(tellYourWorld,5)).
+cantante(seeU,cancion(novemberRain,6)).
+cantante(seeU,cancion(nightFever,5)).
 
-%Definir los siguientes predicados que sean totalmente inversibles, a menos que se indique lo contrario.
+%1----------------------------------------------------------------------------------------------------------------
+esNovedoso(Cantante):-sabeAlMenos2Canciones(Cantante),tiempoTotal(Cantante,Resultado),Resultado <15.
 
-%1)
-esNovedoso(Cantante):-sabeAlMenos2Canciones(Cantante),tiempoTotal(Cantante).
+sabeAlMenos2Canciones(Cantante):-cantante(Cantante,Cancion),cantante(Cantante,OtraCancion),Cancion \= OtraCancion.
 
-sabeAlMenos2Canciones(Cantante):-cantante(Cantante,_,_),findall(Tema,cantante(Cantante,Tema,_),Canciones),length(Canciones,Cantidad),Cantidad>=2.
-tiempoTotal(Cantante):-cantante(Cantante,Tema,_),findall(Tiempo,cantante(Cantante,Tema,Tiempo),ListaDeTiempo),sumlist(ListaDeTiempo,Numero),Numero < 15.
+tiempoTotal(Cantante,Resultado):-findall(Tiempo,tiempoDeCancion(Cantante,Tiempo),ListaDeTiempo),sumlist(ListaDeTiempo,Resultado).
 
-/*
-Hay algunos vocaloids que simplemente no quieren cantar canciones largas porque
-no les gusta, es por eso que se pide saber si un cantante es acelerado, condición
-que se da cuando todas sus canciones duran 4 minutos o menos. Resolver sin usar forall/2.
-*/
-esAcelerado(Cantante):-cantante()findall(Tiempo,cantante(Cantante,_,Tiempo),Tiempos),max_member(Numero,Tiempos),4 >= Numero.
+tiempoDeCancion(Cantante,Tiempo):-cantante(Cantante,Cancion),dameTiempo(Cancion,Tiempo).
+
+dameTiempo(cancion(_,Tiempo),Tiempo).
+
+%2----------------------------------------------------------------------------------------------------------------
+esAcelerado(Cantante):-vocaloid(Cantante),not((tiempoDeCancion(Cantante,Tiempo), Tiempo < 4)).
+
+vocaloid(Cantante):-cantante(Cantante,_).
+
+%1----------------------------------------------------------------------------------------------------------------
+%concierto(Pais,DondeSeRealizará,Fama,TipoDeConcierto(gigante())).
+concierto(mikuExpo,estadosUnidos,2000,gigante(2,6)).
+concierto(magicalMirai,japon,3000,gigante(3,10)).
+concierto(vocalektVisions,estadosUnidos,1000,mediano(9)).
+concierto(mikuFest,argentina,100,pequenio(4)).
+
+%2----------------------------------------------------------------------------------------------------------------
+/* Se requiere saber si un vocaloid puede participar en un concierto,
+esto se da cuando cumple los requisitos del tipo de concierto.
+También sabemos que Hatsune Miku puede participar en cualquier concierto.*/
+
+puedeParticipar(hatsuneMiku,Concierto):-concierto(Concierto,_,_,_).
+puedeParticipar(Cantante,Concierto):-vocaloid(Cantante),Cantante \= hatsuneMiku, concierto(Concierto,_,_,Requisitos),cumpleRequisitos(Requisitos,Cantante).
+
+cumpleRequisitos(gigante(DebeSaberUnMinimoDe,TiempoMinimo),Cantante):-tiempoMinimo(TiempoMinimo,Cantante),debeSaberUnMinimoDe(DebeSaberUnMinimoDe,Cantante).
+
+cumpleRequisitos(mediano(TiempoMaximo),Cantante):- tiempoTotal(Cantante,Resultado), Resultado =< TiempoMaximo.
+
+cumpleRequisitos(pequenio(TiempoMinimo),Cantante):-cantante(Cantante,Cancion),dameTiempo(Cancion,Tiempo), Tiempo > TiempoMinimo.
+
+tiempoMinimo(TiempoMinimo,Cantante):-tiempoTotal(Cantante,Resultado), Resultado > TiempoMinimo.
+
+debeSaberUnMinimoDe(Cantidad,Cantante):-cantidadDeCanciones(Cantante,TotalDeCanciones),TotalDeCanciones >= Cantidad.
+
+cantidadDeCanciones(Cantante,TotalDeCanciones):-findall(Canciones,cantante(Cantante,Canciones),ListaDeCanciones), length(ListaDeCanciones,TotalDeCanciones).
+
+%3----------------------------------------------------------------------------------------------------------------
+/*Conocer el vocaloid más famoso, es decir con mayor nivel de fama. El nivel de fama de un vocaloid se calcula como la fama total
+que le dan los conciertos en los cuales puede participar multiplicado por la cantidad de canciones que sabe cantar. */
+%FamaTotal=FamaDeConciertosQuePuedeParticipar*CantDeCanciones
+elMasFamoso(Cantante):-nivelDeFama(Cantante,CantidadDeFama),forall(nivelDeFama(_,Fama),CantidadDeFama >= Fama).
+
+nivelDeFama(Cantante,CantidadDeFama):-famaTotal(Cantante,Fama),cantidadDeCanciones(Cantante,Total),CantidadDeFama is Fama* Total.
+
+famaTotal(Cantante,FamaTotal):-findall(Fama,participa(Cantante,Fama),ListaDeFama),sumlist(ListaDeFama,FamaTotal).
+
+participa(Cantante,Fama):-,puedeParticipar(Cantante,Concierto),fama(Concierto,Fama).
+
+fama(Concierto,Fama):-concierto(Concierto,_,Fama,_).
+
